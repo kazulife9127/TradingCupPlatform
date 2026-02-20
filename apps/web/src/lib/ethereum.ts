@@ -1,3 +1,20 @@
+export function isMobile(): boolean {
+  if (typeof navigator === "undefined") return false;
+  return /Android|iPhone|iPad|iPod|webOS|BlackBerry|IEMobile|Opera Mini/i.test(
+    navigator.userAgent
+  );
+}
+
+export function hasEthereumProvider(): boolean {
+  return typeof window !== "undefined" && !!window.ethereum;
+}
+
+export function getMetaMaskDeepLink(): string {
+  const host = typeof window !== "undefined" ? window.location.host : "";
+  const path = typeof window !== "undefined" ? window.location.pathname : "";
+  return `https://metamask.app.link/dapp/${host}${path}`;
+}
+
 export async function connectMetaMask(): Promise<string> {
   if (typeof window === "undefined" || !window.ethereum) {
     throw new Error("MetaMask is not installed");
