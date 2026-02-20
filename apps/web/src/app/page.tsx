@@ -4,7 +4,7 @@ import { ConnectWalletButton } from "@/components/ConnectWalletButton";
 
 export default async function LoginPage() {
   const session = await auth();
-  if (session) redirect("/lobby");
+  if (session?.user?.name) redirect("/lobby");
 
   return (
     <main className="flex min-h-dvh flex-col items-center justify-center px-4">

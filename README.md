@@ -25,7 +25,12 @@ npm install
 cp .env.example .env
 ```
 
-`.env` を編集し、Supabase の接続情報と NextAuth のシークレットを設定。
+`.env` を編集し、Supabase の接続情報、NextAuth のシークレット、ENCRYPTION_KEY を設定。
+
+```bash
+# ENCRYPTION_KEY の生成
+openssl rand -hex 32
+```
 
 ### 3. Prisma Client の生成
 
@@ -73,6 +78,7 @@ npm run dev:admin  # http://localhost:3001
    - `DIRECT_URL`
    - `NEXTAUTH_SECRET`
    - `NEXTAUTH_URL` (デプロイ先のURL)
+   - `ENCRYPTION_KEY`
 
 ### Admin (管理画面)
 

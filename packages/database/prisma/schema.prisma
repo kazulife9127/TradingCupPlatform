@@ -8,12 +8,28 @@ generator client {
   provider = "prisma-client-js"
 }
 
+enum CupStatus {
+  DRAFT
+  UPCOMING
+  ACTIVE
+  FINISHED
+}
+
+enum ParticipantStatus {
+  REGISTERED
+  ACTIVE
+  DISQUALIFIED_DEPOSIT
+  DISQUALIFIED_VOLUME
+}
+
 model User {
-  id            String   @id @default(uuid())
-  walletAddress String   @unique
+  id            String        @id @default(uuid())
+  walletAddress String        @unique
   displayName   String?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  participants  Participant[]
+  apiKeys       ApiKey[]
 }
 
 model AdminUser {
@@ -23,4 +39,54 @@ model AdminUser {
   name      String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Cup {
+  id           String        @id @default(uuid())
+  title        String
+  description  String?
+  status       CupStatus     @default(DRAFT)
+  exchange     String        @default("Exchange A")
+  pair         String        @default("IZKY/USDT")
+  startAt      DateTime
+  endAt        DateTime
+  minVolume    Float         @default(100)
+  finalizedAt  DateTime?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  participants Participant[]
+}
+
+model Participant {
+  id           String            @id @default(uuid())
+  cupId        String
+  cup          Cup               @relation(fields: [cupId], references: [id])
+  userId       String
+  user         User              @relation(fields: [userId], references: [id])
+  status       ParticipantStatus @default(REGISTERED)
+  startBalance Float?
+  endBalance   Float?
+  pnl          Float?
+  pnlPercent   Float?
+  volume       Float?
+  rank         Int?
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+
+  @@unique([cupId, userId])
+}
+
+model ApiKey {
+  id             String   @id @default(uuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id])
+  exchange       String
+  apiKey         String
+  apiSecret      String
+  isValid        Boolean  @default(false)
+  lastTestedAt   DateTime?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@unique([userId, exchange])
 }

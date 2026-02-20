@@ -11,6 +11,7 @@ const publicClient = createPublicClient({
 });
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
+  trustHost: true,
   providers: [
     Credentials({
       id: "siwe",
@@ -58,11 +59,15 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
+        token.sub = user.id;
         token.address = user.name;
       }
       return token;
     },
     async session({ session, token }) {
+      if (token.sub) {
+        session.user.id = token.sub;
+      }
       if (token.address) {
         session.user.name = token.address as string;
       }
